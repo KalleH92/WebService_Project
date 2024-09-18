@@ -1,6 +1,7 @@
 package com.kh.ws_projekt.controller;
 
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -30,7 +31,11 @@ public class AnimeController {
 
     }
 
-    //@PostMapping("/{}")
-    //public Mono<String>
+    @PostMapping
+    public Mono<String> insertUserToUsers (
+            @RequestBody AnimeController animeController
+    ) {
+        return ResponseEntity.ok(AnimeController.super(fetchAnimeApi(super)));
+    }
 
 }
