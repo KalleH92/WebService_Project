@@ -6,6 +6,14 @@ import jakarta.persistence.Embeddable;
 public class Data {
 
     private String title;
+    public Data() {
+
+    }
+    public Data(String animeTitel) {
+        this.title = animeTitel;
+    }
+
+
     public String getTitle() {
         return title;
     }

@@ -2,12 +2,15 @@ package com.kh.ws_projekt.controller;
 
 
 import com.kh.ws_projekt.model.AnimeModel;
+import com.kh.ws_projekt.model.Data;
 import com.kh.ws_projekt.repository.AnimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/anime")
@@ -35,7 +38,6 @@ public class AnimeController {
                 )
                 .retrieve()
                 .bodyToMono(AnimeModel.class);
-
     }
 
     @PostMapping("/{id}")
@@ -49,18 +51,19 @@ public class AnimeController {
                 .retrieve()
                 .bodyToMono(AnimeModel.class).block();
             animeRepository.save(animeModel);
-            return ResponseEntity.ok(animeModel);
+            return ResponseEntity.status(201).body(animeModel);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AnimeModel> animeTitsUpdate (
+            @PathVariable Long id, @RequestBody String animeTitel) {
+        Optional<AnimeModel> animeDB = animeRepository.findById(id);
+        AnimeModel anime = animeDB.get();
+        anime.setData(new Data(animeTitel));
+        animeRepository.save(anime);
+        return ResponseEntity.status(200).body(anime);
     }
 
 
-    /*
-    @PostMapping
-    public Mono<String> insertUserToUsers (
-            @RequestBody AnimeController animeController
-    ) {
-        return ResponseEntity.ok(AnimeController.super(fetchAnimeApi(super)));
-    }
-
-     */
 
 }
