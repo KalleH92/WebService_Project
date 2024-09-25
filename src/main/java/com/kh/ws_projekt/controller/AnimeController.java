@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -28,47 +30,66 @@ public class AnimeController {
 
 
     @GetMapping("/{id}")
-        public Mono<AnimeModel> fetchAnimeApi(
+        public Object fetchAnimeApi(
                 @PathVariable("id") String id) {
+        try {
+            Optional<AnimeModel> animeModel = Optional.ofNullable(animeWebClientConfig.get()
+                    .uri(anime -> anime
+                            .path("anime/" + id)
+                            .build()
+                    )
+                    .retrieve()
+                    .bodyToMono(AnimeModel.class).block());
+            return ResponseEntity.status(200).body(animeModel.get());
 
-        return animeWebClientConfig.get()
-                .uri(anime -> anime
-                        .path("anime/" + id)
-                        .build()
-                )
-                .retrieve()
-                .bodyToMono(AnimeModel.class);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Nothing exist");
+        }
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<AnimeModel> insertAnimeToAnime (
+
+    public ResponseEntity<Object> insertAnimeToAnime (
             @PathVariable String id) {
-            AnimeModel animeModel = animeWebClientConfig.get()
-                .uri(anime -> anime
-                        .path("anime/" + id)
-                        .build()
-                )
-                .retrieve()
-                .bodyToMono(AnimeModel.class).block();
-            animeRepository.save(animeModel);
-            return ResponseEntity.status(201).body(animeModel);
+        try {
+            Optional<AnimeModel> animeModel = Optional.ofNullable(animeWebClientConfig.get()
+                    .uri(anime -> anime
+                            .path("anime/" + id)
+                            .build()
+                    )
+                    .retrieve()
+                    .bodyToMono(AnimeModel.class).block());
+                animeRepository.save(animeModel.get());
+                return ResponseEntity.status(201).body(animeModel.get());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body("Nothing found");
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnimeModel> animeTitleUpdate (
+    public ResponseEntity<Object> animeTitleUpdate (
             @PathVariable Long id, @RequestBody String animeTitel) {
-        Optional<AnimeModel> animeDB = animeRepository.findById(id);
-        AnimeModel anime = animeDB.get();
-        anime.setData(new Data(animeTitel));
-        animeRepository.save(anime);
-        return ResponseEntity.status(200).body(anime);
+        if (animeRepository.findById(id).isPresent()) {
+            Optional<AnimeModel> animeDB = animeRepository.findById(id);
+            AnimeModel anime = animeDB.get();
+            anime.setData(new Data(animeTitel));
+            animeRepository.save(anime);
+            return ResponseEntity.status(200).body(anime);
+        } else {
+            return ResponseEntity.status(404).body("Nothing found to update");
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> animeTitleDelete (
             @PathVariable Long id) {
-                animeRepository.deleteById(id);
-                return ResponseEntity.status(200).body("removed");
+        if (animeRepository.findById(id).isPresent()) {
+            animeRepository.deleteById(id);
+            return ResponseEntity.status(200).body("removed");
+        } else {
+            return ResponseEntity.status(404).body("Nothing removed");
+        }
     }
 
 
