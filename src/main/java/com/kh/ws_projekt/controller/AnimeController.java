@@ -55,7 +55,7 @@ public class AnimeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnimeModel> animeTitsUpdate (
+    public ResponseEntity<AnimeModel> animeTitleUpdate (
             @PathVariable Long id, @RequestBody String animeTitel) {
         Optional<AnimeModel> animeDB = animeRepository.findById(id);
         AnimeModel anime = animeDB.get();
@@ -64,6 +64,12 @@ public class AnimeController {
         return ResponseEntity.status(200).body(anime);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> animeTitleDelete (
+            @PathVariable Long id) {
+                animeRepository.deleteById(id);
+                return ResponseEntity.status(200).body("removed");
+    }
 
 
 }
