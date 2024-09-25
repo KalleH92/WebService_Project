@@ -1,6 +1,8 @@
 package com.kh.ws_projekt.controller;
 
 
+import com.kh.ws_projekt.model.AnimeModel;
+import com.kh.ws_projekt.repository.AnimeRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -11,15 +13,18 @@ import reactor.core.publisher.Mono;
 public class AnimeController {
 
     private final WebClient animeWebClientConfig;
-
-    public AnimeController(WebClient.Builder webClient) {
+private final AnimeRepository animeRepository;
+    public AnimeController(WebClient.Builder webClient, AnimeRepository animeRepository) {
         this.animeWebClientConfig = webClient
+
                 .baseUrl("https://api.jikan.moe/v4/")
                 .build();
+        this.animeRepository = animeRepository;
     }
 
+
     @GetMapping("/{id}")
-        public Mono<String> fetchAnimeApi(@PathVariable("id") String id) {
+        public Mono<AnimeModel> fetchAnimeApi(@PathVariable("id") String id) {
 
         return animeWebClientConfig.get()
                 .uri(anime -> anime
@@ -27,15 +32,18 @@ public class AnimeController {
                         .build()
                 )
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(AnimeModel.class);
 
     }
 
+    /*
     @PostMapping
     public Mono<String> insertUserToUsers (
             @RequestBody AnimeController animeController
     ) {
         return ResponseEntity.ok(AnimeController.super(fetchAnimeApi(super)));
     }
+
+     */
 
 }

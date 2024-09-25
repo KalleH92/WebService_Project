@@ -1,24 +1,25 @@
 package com.kh.ws_projekt.model;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+@Entity
 
 public class AnimeModel {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private Data data;
 
-    //*Planninglist
-    // Mappings:
-    // GET
-    // POST
-    // DELETE
-    // Forts planning:
-    // -ResponseEntity
-    // -@PathVariable
-    // -Grundläggande Databas koppling och data lagring
-    // -Förser logiska status koder för ev Web Service svar
-    // -Min 8 commits - 1/8
-    // Commits hålla sig till bästa praxis alltså inte namngivning som new commit eller fix.*//
+    public Data getData() {
+        return data;
+    }
 
-
-
-
-
-
+    public void setData(Data data) {
+        this.data = data;
+    }
 }
